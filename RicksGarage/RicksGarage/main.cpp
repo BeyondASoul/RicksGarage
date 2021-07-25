@@ -24,12 +24,16 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "modelAnim.h"
 
 // Function prototypes
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 void animacion();
+void animacionCarro();
+void animacionGarage();
+void animacionSilla();
 
 // Window dimensions
 const GLuint WIDTH = 1920, HEIGHT = 1440;
@@ -42,13 +46,22 @@ GLfloat lastY = HEIGHT / 2.0;
 bool keys[1024];
 bool firstMouse = true;
 float range = 0.0f;
-float rot = 0.0f;
+float rotGarage = 0.0f, rotGarageDoor = 0.0f, rotHouseDoor = -100.0;
 
 
 // Light attributes
 glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-glm::vec3 PosIni(-95.0f, 1.0f, -45.0f);
 bool active=true;
+
+//Animation Variables
+glm::vec3 PosIniCar(16.0f, 1.5f, 3.7f);
+glm::vec3 PosIniChair(-0.5f, 1.1f, 1.0f);
+bool circuitoCar = false, garageAnim = false, sillaAnim = false;
+bool rec1 = true, rec2 = false, rec3 = false, rec4 = false;
+bool recG1 = true, recG2 = false;
+bool recS1 = true, recS2 = false, recS3 = false;
+float movCarX = 0.0f, movCarZ = 0.0f, rotCar = 0.0f;
+
 
 
 // Deltatime
@@ -56,7 +69,7 @@ GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
 GLfloat lastFrame = 0.0f;  	// Time of last frame
 
 // Keyframes
-float posX =PosIni.x, posY = PosIni.y, posZ = PosIni.z, rotRodIzq = 0, rotRodDer = 0, rotBraIzq = 0, rotBraDer = 0;
+float movChairX = PosIniChair.x, movChairZ = PosIniChair.z, rotCh = 0.0f, rotIncCh = 0.0f, rotPortal = 0.0f, incPortal = 0.0;
 
 #define MAX_FRAMES 9
 int i_max_steps = 190;
@@ -64,20 +77,14 @@ int i_curr_steps = 0;
 typedef struct _frame
 {
 	//Variables para GUARDAR Key Frames
-	float posX;		//Variable para PosicionX
-	float posY;		//Variable para PosicionY
-	float posZ;		//Variable para PosicionZ
-	float incX;		//Variable para IncrementoX
-	float incY;		//Variable para IncrementoY
-	float incZ;		//Variable para IncrementoZ
-	float rotRodIzq;
-	float rotRodDer;
-	float rotBraIzq;
-	float rotBraDer;
-	float rotInc;
-	float rotInc2;
-	float rotInc3;
-	float rotInc4;
+	float movChairX;		//Variable para PosicionX
+	float movChairZ;		//Variable para PosicionZ
+	float incChairX;		//Variable para IncrementoX
+	float incChairZ;		//Variable para IncrementoZ
+	float rotCh;			//Rotación silla
+	float rotIncCh;			//Incremento rotación silla
+	float rotPortal;		//Rotación portal
+	float incPortal;		//Incremento rotación portal
 
 }FRAME;
 
@@ -96,69 +103,88 @@ glm::vec3 pointLightPositions[] = {
 
 glm::vec3 LightP1, LightP2, LightP3;
 
-
-
-
 void saveFrame(void)
 {
-
-	printf("frameindex %d\n", FrameIndex);
-	
+	printf("frameindex 0\n");
 	//Keyframes Posición
-	KeyFrame[FrameIndex].posX = posX;
-	KeyFrame[FrameIndex].posY = posY;
-	KeyFrame[FrameIndex].posZ = posZ;
-	
-	//KeyFrames Rotación Extremidades
-	KeyFrame[FrameIndex].rotRodIzq = rotRodIzq;
-	KeyFrame[FrameIndex].rotRodDer = rotRodDer;
-	KeyFrame[FrameIndex].rotBraIzq = rotBraIzq;
-	KeyFrame[FrameIndex].rotBraDer = rotBraDer;
-	
-
+	KeyFrame[0].movChairX = PosIniChair.x;
+	KeyFrame[0].movChairZ = PosIniChair.z;
+	//KeyFrames Rotación
+	KeyFrame[0].rotCh = rotCh;
+	KeyFrame[0].rotPortal = -90;
 	FrameIndex++;
+
+	printf("frameindex 1\n");
+	//Keyframes Posición
+	KeyFrame[1].movChairX = 1.0f;
+	KeyFrame[1].movChairZ = 0.0f;
+	//KeyFrames Rotación
+	KeyFrame[1].rotCh = 180;
+	KeyFrame[1].rotPortal = 180;
+	FrameIndex++;
+
+	printf("frameindex 2\n");
+	//Keyframes Posición
+	KeyFrame[2].movChairX = -1.0f;
+	KeyFrame[2].movChairZ = 1.5f;
+	//KeyFrames Rotación
+	KeyFrame[2].rotCh = -180;
+	KeyFrame[2].rotPortal = -180;
+	FrameIndex++;
+
+	printf("frameindex 3\n");
+	//Keyframes Posición
+	KeyFrame[3].movChairX = PosIniChair.x;
+	KeyFrame[3].movChairZ = PosIniChair.z;
+	//KeyFrames Rotación
+	KeyFrame[3].rotCh = rotCh;
+	KeyFrame[3].rotPortal = rotPortal;
+	FrameIndex++;
+
+	printf("frameindex 4\n");
+	//Keyframes Posición
+	KeyFrame[4].movChairX = 1.0f;
+	KeyFrame[4].movChairZ = 0.0f;
+	//KeyFrames Rotación
+	KeyFrame[4].rotCh = 180;
+	KeyFrame[4].rotPortal = 180;
+	FrameIndex++;
+
+	printf("frameindex 5\n");
+	//Keyframes Posición
+	KeyFrame[5].movChairX = -1.0f;
+	KeyFrame[5].movChairZ = 1.5f;
+	//KeyFrames Rotación
+	KeyFrame[5].rotCh = -180;
+	KeyFrame[5].rotPortal = -180;
+	//FrameIndex++;
 }
 
 void resetElements(void)
 {
-	posX = KeyFrame[0].posX;
-	posY = KeyFrame[0].posY;
-	posZ = KeyFrame[0].posZ;
+	movChairX= KeyFrame[0].movChairX;
+	movChairZ = KeyFrame[0].movChairZ;
 
-	rotRodIzq = KeyFrame[0].rotRodIzq;
-	rotRodDer = KeyFrame[0].rotRodDer;
-	rotBraIzq = KeyFrame[0].rotBraIzq;
-	rotBraDer = KeyFrame[0].rotBraDer;
+	rotCh = KeyFrame[0].rotCh;
+	rotPortal = KeyFrame[0].rotPortal;
 
 }
 
 void interpolation(void)
 {
 
-	KeyFrame[playIndex].incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
-	KeyFrame[playIndex].incY = (KeyFrame[playIndex + 1].posY - KeyFrame[playIndex].posY) / i_max_steps;
-	KeyFrame[playIndex].incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;
+	KeyFrame[playIndex].incChairX = (KeyFrame[playIndex + 1].movChairX - KeyFrame[playIndex].movChairX) / i_max_steps;
+	KeyFrame[playIndex].incChairZ = (KeyFrame[playIndex + 1].movChairZ - KeyFrame[playIndex].movChairZ) / i_max_steps;
 	
-	KeyFrame[playIndex].rotInc = (KeyFrame[playIndex + 1].rotRodIzq - KeyFrame[playIndex].rotRodIzq) / i_max_steps;
-	KeyFrame[playIndex].rotInc2 = (KeyFrame[playIndex + 1].rotRodDer - KeyFrame[playIndex].rotRodDer) / i_max_steps;
-	KeyFrame[playIndex].rotInc3 = (KeyFrame[playIndex + 1].rotBraIzq - KeyFrame[playIndex].rotBraIzq) / i_max_steps;
-	KeyFrame[playIndex].rotInc4 = (KeyFrame[playIndex + 1].rotBraDer - KeyFrame[playIndex].rotBraDer) / i_max_steps;
+	KeyFrame[playIndex].rotIncCh = (KeyFrame[playIndex + 1].rotCh - KeyFrame[playIndex].rotCh) / i_max_steps;
+	KeyFrame[playIndex].incPortal = (KeyFrame[playIndex + 1].rotPortal - KeyFrame[playIndex].rotPortal) / i_max_steps;
 
 }
-
-
-
 
 int main()
 {
 	// Init GLFW
 	glfwInit();
-	// Set all the required options for GLFW
-	/*(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "SilvaNunezAlejandroBryan_ProyectoFinal", nullptr, nullptr);
@@ -178,7 +204,6 @@ int main()
 	// Set the required callback functions
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwSetCursorPosCallback(window, MouseCallback);
-	printf("%f", glfwGetTime());
 
 	// GLFW Options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -203,11 +228,14 @@ int main()
 	Shader lightingShader("Shaders/lighting.vs", "Shaders/lighting.frag");
 	Shader lampShader("Shaders/lamp.vs", "Shaders/lamp.frag");
 	Shader SkyBoxshader("Shaders/SkyBox.vs", "Shaders/SkyBox.frag");
+	Shader animShader("Shaders/anim.vs", "Shaders/anim.frag");
 
 	//Cargando los modelos
 	//FACHADA
 	Model Fachada((char*)"Models/Fachada/fachada.obj");
-	Model Piso((char*)"Models/Fachada/grass.obj");
+	Model Zaguan((char*)"Models/Fachada/garagedoor.obj");
+	Model PuertaGarage((char*)"Models/Fachada/doortogarage.obj");
+	Model PuertaCasa((char*)"Models/Fachada/housedoor.obj");
 	//INTERIOR
 	Model Escritorio((char*)"Models/Interior/desktop.obj");
 	Model Lavadora((char*)"Models/Interior/washer.obj");
@@ -219,8 +247,16 @@ int main()
 	Model Tuboensayo((char*)"Models/Interior/testtube.obj");
 	Model Extras((char*)"Models/Interior/extras.obj");
 	//PERSONAJES
-	Model Rick((char*)"Models/Personaje/rick.obj");
+	Model Morty((char*)"Models/Personaje/morty.obj");
+	//EXTRAS
+	Model Carro((char*)"Models/Extra/car.obj");
+	Model Label((char*)"Models/Extra/label.obj");
+	Model Silla((char*)"Models/Extra/chair.obj");
+	Model Portal((char*)"Models/Extra/portal.obj");
 
+	//MODELO ANIMADO
+	ModelAnim animacionPersonaje("Animaciones/RickAnimado/macarena.dae");
+	animacionPersonaje.initShaders(animShader.Program);
 
 	// Build and compile our shader program
 
@@ -228,21 +264,16 @@ int main()
 	
 	for(int i=0; i<MAX_FRAMES; i++)
 	{
-		KeyFrame[i].posX = 0;
-		KeyFrame[i].incX = 0;
-		KeyFrame[i].incY = 0;
-		KeyFrame[i].incZ = 0;
-		KeyFrame[i].rotRodIzq = 0;
-		KeyFrame[i].rotInc = 0;
-		KeyFrame[i].rotRodDer = 0;
-		KeyFrame[i].rotInc2 = 0;
-		KeyFrame[i].rotBraIzq = 0;
-		KeyFrame[i].rotInc3 = 0;
-		KeyFrame[i].rotBraDer = 0;
-		KeyFrame[i].rotInc4 = 0;
+		KeyFrame[i].movChairX = 0;
+		KeyFrame[i].movChairZ = 0;
+		KeyFrame[i].incChairX = 0;
+		KeyFrame[i].incChairZ = 0;
+		KeyFrame[i].rotCh = 0;
+		KeyFrame[i].rotIncCh = 0;
+		KeyFrame[i].rotPortal= 0;
+		KeyFrame[i].incPortal = 0;
+
 	}
-
-
 
 	// Set up vertex data (and buffer(s)) and attribute pointers
 	GLfloat vertices[] =
@@ -438,6 +469,9 @@ int main()
 		glfwPollEvents();
 		DoMovement();
 		animacion();
+		animacionCarro();
+		animacionGarage();
+		animacionSilla();
 
 
 		// Clear the colorbuffer
@@ -451,12 +485,7 @@ int main()
 		glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 		// Set material properties
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 32.0f);
-		// == ==========================
-		// Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
-		// the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
-		// by defining light types as classes and set their values in there, or by using a more efficient uniform approach
-		// by using 'Uniform buffer objects', but that is something we discuss in the 'Advanced GLSL' tutorial.
-		// == ==========================
+		// Setting lights
 		// Directional light
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "dirLight.direction"), -0.2f, -1.0f, -0.3f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "dirLight.ambient"), 0.3f, 0.3f, 0.3f);
@@ -468,7 +497,7 @@ int main()
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].ambient"), 0.05f, 0.05f, 0.05f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].diffuse"), LightP1.x, LightP1.y, LightP1.z);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].specular"), 0.1f, 0.0f, 0.0f);
+		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].specular"), LightP1.x, LightP1.y, LightP1.z);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].constant"), 1.0f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].linear"), 0.09f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].quadratic"), 0.032f);
@@ -479,7 +508,7 @@ int main()
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].ambient"), 0.05f, 0.05f, 0.05f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].diffuse"), LightP2.x, LightP2.y, LightP2.z);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].specular"), 0.1f,0.1f,0.1f);
+		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].specular"), 0.1f, 0.1f, 0.1f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[1].constant"), 1.0f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[1].linear"), 0.09f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[1].quadratic"), 0.032f);
@@ -521,7 +550,6 @@ int main()
 		glm::mat4 view;
 		view = camera.GetViewMatrix();
 
-
 		// Get the uniform locations
 		GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
 		GLint viewLoc = glGetUniformLocation(lightingShader.Program, "view");
@@ -531,17 +559,8 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Bind diffuse map
-		//glBindTexture(GL_TEXTURE_2D, texture1);*/
-
-		// Bind specular map
-		/*glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);*/
-
-
 		glBindVertexArray(VAO);
 		glm::mat4 tmp = glm::mat4(1.0f); //Temp
-
 
 		//Carga de modelos
 		//FACHADA
@@ -550,11 +569,6 @@ int main()
 		tmp = model = glm::translate(model, glm::vec3(0, 1, 0));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		Fachada.Draw(lightingShader);
-
-		//Piso
-		view = camera.GetViewMatrix();
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		Piso.Draw(lightingShader);
 
 		//INTERIOR
 		//Escritorio 
@@ -603,96 +617,93 @@ int main()
 		Extras.Draw(lightingShader);
 
 		//PERSONAJES
+		//Morty
 		view = camera.GetViewMatrix();
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		Rick.Draw(lightingShader);
+		Morty.Draw(lightingShader);
 
-		////Pierna Izq
-		//view = camera.GetViewMatrix();
-		//model = glm::translate(tmp, glm::vec3(-0.5f, 0.0f, -0.1f));
-		//model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		//model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0));
-		//model = glm::rotate(model, glm::radians(-rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//PiernaDer.Draw(lightingShader);
-		////Pie Izq
-		//view = camera.GetViewMatrix();
-		//model = glm::translate(model, glm::vec3(0, -0.9f, -0.2f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//BotaDer.Draw(lightingShader);
+		//EXTRAS
 
-		////Pierna Der
-		//view = camera.GetViewMatrix();
-		//model = glm::translate(tmp, glm::vec3(0.5f, 0.0f, -0.1f));
-		//model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		//model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
-		//model = glm::rotate(model, glm::radians(-rotRodDer), glm::vec3(1.0f, 0.0f, 0.0f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//PiernaIzq.Draw(lightingShader);
-		////Pie Der
-		//view = camera.GetViewMatrix();
-		//model = glm::translate(model, glm::vec3(0, -0.9f, -0.2f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//BotaDer.Draw(lightingShader);
+		//Label
+		view = camera.GetViewMatrix();
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		Label.Draw(lightingShader);
 
-		////Brazo derecho
-		//view = camera.GetViewMatrix();
-		//model = glm::mat4(1);
-		//model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		//model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
-		//model = glm::translate(model, glm::vec3(-0.75f, 2.5f, 0));
-		//model = glm::rotate(model, glm::radians(-rotBraDer), glm::vec3(1.0f, 0.0f, 0.0f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//BrazoDer.Draw(lightingShader);
+		//ANIMADOS
+		//Zaguan
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(4.7f, 4.2f, 3.3781f));
+		model = glm::rotate(model, glm::radians(rotGarage), glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		Zaguan.Draw(lightingShader);
 
-		////Brazo Izquierdo
-		//view = camera.GetViewMatrix();
-		//model = glm::mat4(1);
-		//model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		//model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
-		//model = glm::translate(model, glm::vec3(0.75f, 2.5f, 0));
-		//model = glm::rotate(model, glm::radians(-rotBraIzq), glm::vec3(1.0f, 0.0f, 0.0f));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//BrazoIzq.Draw(lightingShader);
+		//Puerta Garage
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(-2.8f, 2.23f, -0.6996f));
+		model = glm::rotate(model, glm::radians(rotGarageDoor), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		PuertaGarage.Draw(lightingShader);
 
-		////Cabeza
-		//view = camera.GetViewMatrix();
-		//model = glm::mat4(1);
-		//model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		//model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0));
-		//model = glm::translate(model, glm::vec3(0.0f, 2.5f, 0));
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//Cabeza.Draw(lightingShader);
+		//Puerta Casa
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(0.96f, 2.23f, -10.47f));
+		model = glm::rotate(model, glm::radians(rotHouseDoor), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		PuertaCasa.Draw(lightingShader);
 
+		//Carro
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, PosIniCar + glm::vec3(movCarX, 0.0f, movCarZ));
+		model = glm::rotate(model, glm::radians(rotCar), glm::vec3(0.0f, 1.0f, 0.0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		Carro.Draw(lightingShader);
 
+		//SIlla
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, PosIniChair + glm::vec3(movChairX, 0.0f, movChairZ));
+		model = glm::rotate(model, glm::radians(rotCh), glm::vec3(0.0f, 1.0f, 0.0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		Silla.Draw(lightingShader);
+
+		//Portal
+		view = camera.GetViewMatrix();
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(12.0f, 3.0f, 3.15));
+		model = glm::rotate(model, glm::radians(rotPortal), glm::vec3(1.0f, 0.0f, 0.0));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		Portal.Draw(lightingShader);
 		glBindVertexArray(0);
 
+		//Rick Animado
+		animShader.Use();
+		modelLoc = glGetUniformLocation(animShader.Program, "model");
+		viewLoc = glGetUniformLocation(animShader.Program, "view");
+		projLoc = glGetUniformLocation(animShader.Program, "projection");
 
-		////// Also draw the lamp object, again binding the appropriate shader
-		//lampShader.Use();
-		//// Get location objects for the matrices on the lamp shader (these could be different on a different shader)
-		//modelLoc = glGetUniformLocation(lampShader.Program, "model");
-		//viewLoc = glGetUniformLocation(lampShader.Program, "view");
-		//projLoc = glGetUniformLocation(lampShader.Program, "projection");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//// Set matrices
-		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		//model = glm::mat4(1);
-		//model = glm::translate(model, lightPos);
-		////model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//// Draw the light object (using light's vertex attributes)
-		//glBindVertexArray(lightVAO);
-		//for (GLuint i = 0; i < 4; i++)
-		//{
-		//	model = glm::mat4(1);
-		//	model = glm::translate(model, pointLightPositions[i]);
-		//	model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
-		//	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		//	glDrawArrays(GL_TRIANGLES, 0, 36);
-		//}
-		//glBindVertexArray(0);
+		glUniform3f(glGetUniformLocation(animShader.Program, "material.specular"), 0.2f, 0.2f, 0.2f);
+		glUniform1f(glGetUniformLocation(animShader.Program, "material.shininess"), 32.0f);
+		glUniform3f(glGetUniformLocation(animShader.Program, "light.ambient"), 0.5f, 0.5f, 0.5f);
+		glUniform3f(glGetUniformLocation(animShader.Program, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+		glUniform3f(glGetUniformLocation(animShader.Program, "light.specular"), 0.2f, 0.2f, 0.2f);
+		glUniform3f(glGetUniformLocation(animShader.Program, "light.direction"), 0.0f, -1.0f, -1.0f);
+		view = camera.GetViewMatrix();
+
+		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(8.0f,1.0f,3.0));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.01f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		animacionPersonaje.Draw(animShader);
+		glBindVertexArray(0);
+
 
 
 		// Draw skybox as last
@@ -710,15 +721,9 @@ int main()
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default
 
-
-
-
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 	}
-
-
-
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteVertexArrays(1, &lightVAO);
@@ -729,12 +734,94 @@ int main()
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwTerminate();
 
-
-
-
 	return 0;
 }
 
+void animacionCarro() {
+	if (circuitoCar) {
+		if (rec1) {
+			rotCar = 0.0f;
+			movCarZ -= 0.1f;
+			if (movCarZ < -40.0f) {
+				rec1 = false;
+				rec2 = true;
+			}
+		}
+		if (rec2) {
+			rotCar = -90.0f;
+			movCarX += 0.1;
+			if (movCarX > 7.0f) {
+				rec2 = false;
+				rec3 = true;
+			}
+		}
+		if (rec3) {
+			rotCar = -180.0f;
+			movCarZ += 0.1f;
+			if (movCarZ > 0.0f) {
+				rec3 = false;
+				rec4 = true;
+			}
+		}
+		if (rec4) {
+			rotCar = 90.0f;
+			movCarX -= 0.1f;
+			if (movCarX < 0.0f) {
+				rec4 = false;
+				rec1 = true;
+			}
+		}
+	}
+}
+
+void animacionGarage() {
+	if (garageAnim) {
+		if (recG1) {
+			rotGarage -= 0.5f;
+			if (rotGarage < -90.0f) {
+				recG1 = false;
+				recG2 = true;
+			}
+		}
+		if (recG2) {
+			rotGarage += 0.5f;
+			if (rotGarage > 0.0f) {
+				recG2 = false;
+				recG1 = true;
+			}
+		}
+	}
+}
+
+void animacionSilla() {
+	if (sillaAnim) {
+		if (recS1) {
+			rotCh = 90.0f;
+			movChairX += 0.01f;
+			if (movChairX > 1.0f) {
+				recS1 = false;
+				recS2 = true;
+			}
+		}
+		if (recS2) {
+			rotCh = -45.0f;
+			movChairX -= 0.01f;
+			movChairZ += 0.01f;
+			if (movChairZ > 1.0f) {
+				recS2 = false;
+				recS3 = true;
+			}
+		}
+		if (recS3) {
+			rotCh = -180.0f;
+			movChairZ -= 0.01f;
+			if (movChairZ < 0.0f) {
+				recS3 = false;
+				recS1 = true;
+			}
+		}
+	}
+}
 
 void animacion()
 {
@@ -762,14 +849,10 @@ void animacion()
 			else
 			{
 				//Draw animation
-				posX += KeyFrame[playIndex].incX;
-				posY += KeyFrame[playIndex].incY;
-				posZ += KeyFrame[playIndex].incZ;
-
-				rotRodIzq += KeyFrame[playIndex].rotInc;
-				rotRodDer += KeyFrame[playIndex].rotInc2;
-				rotBraIzq += KeyFrame[playIndex].rotInc3;
-				rotBraDer += KeyFrame[playIndex].rotInc4;
+				movChairX += KeyFrame[playIndex].incChairX;
+				movChairZ += KeyFrame[playIndex].incChairZ;
+				rotCh += KeyFrame[playIndex].rotIncCh;
+				rotPortal += KeyFrame[playIndex].incPortal;
 
 				i_curr_steps++;
 			}
@@ -872,94 +955,76 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 // Moves/alters the camera positions based on user input
 void DoMovement()
 {
-
 	if (keys[GLFW_KEY_1])
 	{
-
-		rot += 1;
-
+		if (rotGarage > -90.0f) {
+			rotGarage -= 1.0f;
+		}
 	}
 
 	if (keys[GLFW_KEY_2])
 	{
-		if (rotRodIzq<80.0f)
-			rotRodIzq += 1.0f;
-			
+
+		if (rotGarage < 0.0f) {
+			rotGarage += 1.0f;
+		}
+
 	}
 
 	if (keys[GLFW_KEY_3])
 	{
-		if (rotRodIzq>-45)
-			rotRodIzq -= 1.0f;
-		
+		if (rotGarageDoor < 90.0f) {
+			rotGarageDoor += 1.0f;
+		}
 	}
 
 	if (keys[GLFW_KEY_4])
 	{
-		if (rotRodDer < 80.0f)
-			rotRodDer += 1.0f;
-
+		if (rotGarageDoor > 0.0f) {
+			rotGarageDoor -= 1.0f;
+		}
 	}
 
 	if (keys[GLFW_KEY_5])
 	{
-		if (rotRodDer > -45)
-			rotRodDer -= 1.0f;
-
+		if (rotHouseDoor > -100.0f) {
+			rotHouseDoor -= 1.0f;
+		}
 	}
 
 	if (keys[GLFW_KEY_6])
 	{
-		if (rotBraIzq < 80.0f)
-			rotBraIzq += 1.0f;
-
+		if (rotHouseDoor < -5.0f) {
+			rotHouseDoor += 1.0f;
+		}
 	}
 
 	if (keys[GLFW_KEY_7])
 	{
-		if (rotBraIzq > -45)
-			rotBraIzq -= 1.0f;
-
+		circuitoCar = true;
 	}
 
 	if (keys[GLFW_KEY_8])
 	{
-		if (rotBraDer < 80.0f)
-			rotBraDer += 1.0f;
-
+		circuitoCar = false;
 	}
 
 	if (keys[GLFW_KEY_9])
 	{
-		if (rotBraDer > -45)
-			rotBraDer -= 1.0f;
-
+		garageAnim = true;
 	}
-	
 
-	//Mov Personaje
-	if (keys[GLFW_KEY_H])
+	if (keys[GLFW_KEY_0])
 	{
-		posZ += 1;
+		garageAnim = false;
 	}
 
-	if (keys[GLFW_KEY_Y])
-	{
-		posZ -= 1;
+	if (keys[GLFW_KEY_O]) {
+		sillaAnim = true;
 	}
-
-	if (keys[GLFW_KEY_G])
-	{
-		posX -= 1;
+	if (keys[GLFW_KEY_P]) {
+		sillaAnim = false;
 	}
-
-	if (keys[GLFW_KEY_J])
-	{
-		posX += 1;
-	}
-
-
-
 
 	// Camera controls
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
