@@ -36,7 +36,7 @@ void animacionGarage();
 void animacionSilla();
 
 // Window dimensions
-const GLuint WIDTH = 1920, HEIGHT = 1440;
+const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
