@@ -38,21 +38,15 @@ void animacionSilla();
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
-
 // Camera
 Camera camera(glm::vec3(3.0f, 3.0f, 6.0f));
 GLfloat lastX = WIDTH / 2.0;
 GLfloat lastY = HEIGHT / 2.0;
 bool keys[1024];
 bool firstMouse = true;
-float range = 0.0f;
 float rotGarage = 0.0f, rotGarageDoor = 0.0f, rotHouseDoor = -100.0;
-
-
 // Light attributes
-glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 bool active=true;
-
 //Animation Variables
 glm::vec3 PosIniCar(16.0f, 1.5f, 3.7f);
 glm::vec3 PosIniChair(-0.5f, 1.1f, 1.0f);
@@ -61,13 +55,9 @@ bool rec1 = true, rec2 = false, rec3 = false, rec4 = false;
 bool recG1 = true, recG2 = false;
 bool recS1 = true, recS2 = false, recS3 = false;
 float movCarX = 0.0f, movCarZ = 0.0f, rotCar = 0.0f;
-
-
-
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
 GLfloat lastFrame = 0.0f;  	// Time of last frame
-
 // Keyframes
 float movChairX = PosIniChair.x, movChairZ = PosIniChair.z, rotCh = 0.0f, rotIncCh = 0.0f, rotPortal = 0.0f, incPortal = 0.0;
 
@@ -81,10 +71,10 @@ typedef struct _frame
 	float movChairZ;		//Variable para PosicionZ
 	float incChairX;		//Variable para IncrementoX
 	float incChairZ;		//Variable para IncrementoZ
-	float rotCh;			//Rotación silla
-	float rotIncCh;			//Incremento rotación silla
-	float rotPortal;		//Rotación portal
-	float incPortal;		//Incremento rotación portal
+	float rotCh;			//Rotaciï¿½n silla
+	float rotIncCh;			//Incremento rotaciï¿½n silla
+	float rotPortal;		//Rotaciï¿½n portal
+	float incPortal;		//Incremento rotaciï¿½n portal
 
 }FRAME;
 
@@ -105,56 +95,51 @@ glm::vec3 LightP1, LightP2, LightP3;
 
 void saveFrame(void)
 {
-	printf("frameindex 0\n");
-	//Keyframes Posición
+	printf("KeyFrame 0 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[0].movChairX = PosIniChair.x;
 	KeyFrame[0].movChairZ = PosIniChair.z;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[0].rotCh = rotCh;
 	KeyFrame[0].rotPortal = -90;
 	FrameIndex++;
-
-	printf("frameindex 1\n");
-	//Keyframes Posición
+	printf("KeyFrame 1 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[1].movChairX = 1.0f;
 	KeyFrame[1].movChairZ = 0.0f;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[1].rotCh = 180;
 	KeyFrame[1].rotPortal = 180;
 	FrameIndex++;
-
-	printf("frameindex 2\n");
-	//Keyframes Posición
+	printf("KeyFrame 2 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[2].movChairX = -1.0f;
 	KeyFrame[2].movChairZ = 1.5f;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[2].rotCh = -180;
 	KeyFrame[2].rotPortal = -180;
 	FrameIndex++;
-
-	printf("frameindex 3\n");
-	//Keyframes Posición
+	printf("KeyFrame 3 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[3].movChairX = PosIniChair.x;
 	KeyFrame[3].movChairZ = PosIniChair.z;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[3].rotCh = rotCh;
 	KeyFrame[3].rotPortal = rotPortal;
 	FrameIndex++;
-
-	printf("frameindex 4\n");
-	//Keyframes Posición
+	printf("KeyFrame 4 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[4].movChairX = 1.0f;
 	KeyFrame[4].movChairZ = 0.0f;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[4].rotCh = 180;
 	KeyFrame[4].rotPortal = 180;
 	FrameIndex++;
-
-	printf("frameindex 5\n");
-	//Keyframes Posición
+	printf("KeyFrame 5 guardado\n");
+	//Keyframes Posiciï¿½n
 	KeyFrame[5].movChairX = -1.0f;
 	KeyFrame[5].movChairZ = 1.5f;
-	//KeyFrames Rotación
+	//KeyFrames Rotaciï¿½n
 	KeyFrame[5].rotCh = -180;
 	KeyFrame[5].rotPortal = -180;
 	//FrameIndex++;
@@ -167,18 +152,15 @@ void resetElements(void)
 
 	rotCh = KeyFrame[0].rotCh;
 	rotPortal = KeyFrame[0].rotPortal;
-
 }
 
 void interpolation(void)
 {
-
 	KeyFrame[playIndex].incChairX = (KeyFrame[playIndex + 1].movChairX - KeyFrame[playIndex].movChairX) / i_max_steps;
 	KeyFrame[playIndex].incChairZ = (KeyFrame[playIndex + 1].movChairZ - KeyFrame[playIndex].movChairZ) / i_max_steps;
 	
 	KeyFrame[playIndex].rotIncCh = (KeyFrame[playIndex + 1].rotCh - KeyFrame[playIndex].rotCh) / i_max_steps;
 	KeyFrame[playIndex].incPortal = (KeyFrame[playIndex + 1].rotPortal - KeyFrame[playIndex].rotPortal) / i_max_steps;
-
 }
 
 int main()
@@ -224,7 +206,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	//Shaders
 	Shader lightingShader("Shaders/lighting.vs", "Shaders/lighting.frag");
 	Shader lampShader("Shaders/lamp.vs", "Shaders/lamp.frag");
 	Shader SkyBoxshader("Shaders/SkyBox.vs", "Shaders/SkyBox.frag");
@@ -260,8 +242,7 @@ int main()
 
 	// Build and compile our shader program
 
-	//Inicialización de KeyFrames
-	
+	//Inicializaciï¿½n de KeyFrames
 	for(int i=0; i<MAX_FRAMES; i++)
 	{
 		KeyFrame[i].movChairX = 0;
@@ -492,7 +473,6 @@ int main()
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "dirLight.diffuse"), 0.3f, 0.3f, 0.3f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "dirLight.specular"), 0.1f, 0.1f, 0.1f);
 
-
 		// Point light 1
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[0].ambient"), 0.05f, 0.05f, 0.05f);
@@ -501,8 +481,6 @@ int main()
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].constant"), 1.0f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].linear"), 0.09f);
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "pointLights[0].quadratic"), 0.032f);
-
-
 
 		// Point light 2
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "pointLights[1].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
@@ -704,8 +682,6 @@ int main()
 		animacionPersonaje.Draw(animShader);
 		glBindVertexArray(0);
 
-
-
 		// Draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content
 		SkyBoxshader.Use();
@@ -825,54 +801,48 @@ void animacionSilla() {
 
 void animacion()
 {
-
-		//Movimiento del personaje
-
-		if (play)
+	//Movimiento por keyframes
+	if (play)
+	{
+		if (i_curr_steps >= i_max_steps) //end of animation between frames?
 		{
-			if (i_curr_steps >= i_max_steps) //end of animation between frames?
+		playIndex++;
+		if (playIndex>FrameIndex - 2)	//end of total animation?
 			{
-				playIndex++;
-				if (playIndex>FrameIndex - 2)	//end of total animation?
-				{
-					printf("termina anim\n");
-					playIndex = 0;
-					play = false;
-				}
-				else //Next frame interpolations
-				{
-					i_curr_steps = 0; //Reset counter
-									  //Interpolation
-					interpolation();
-				}
+				printf("termina anim\n");
+				playIndex = 0;
+				play = false;
 			}
-			else
+		else //Next frame interpolations
 			{
-				//Draw animation
-				movChairX += KeyFrame[playIndex].incChairX;
-				movChairZ += KeyFrame[playIndex].incChairZ;
-				rotCh += KeyFrame[playIndex].rotIncCh;
-				rotPortal += KeyFrame[playIndex].incPortal;
-
-				i_curr_steps++;
+				i_curr_steps = 0; //Reset counter
+				//Interpolation
+				interpolation();
 			}
-
+		}
+	else
+		{
+			//Draw animation
+			movChairX += KeyFrame[playIndex].incChairX;
+			movChairZ += KeyFrame[playIndex].incChairZ;
+			rotCh += KeyFrame[playIndex].rotIncCh;
+			rotPortal += KeyFrame[playIndex].incPortal;
+			i_curr_steps++;
 		}
 	}
-
+}
 
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
+	// Saves all the keyframes 
 	if (keys[GLFW_KEY_L])
 	{
 		if (play == false && (FrameIndex > 1))
 		{
-
 			resetElements();
 			//First Interpolation				
 			interpolation();
-
 			play = true;
 			playIndex = 0;
 			i_curr_steps = 0;
@@ -881,24 +851,20 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 		{
 			play = false;
 		}
-
 	}
-
+	// Plays keyframe animations
 	if (keys[GLFW_KEY_K])
 	{
 		if (FrameIndex<MAX_FRAMES)
 		{
 			saveFrame();
 		}
-
 	}
-
-
+	// Closes principal window
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)
@@ -910,7 +876,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 			keys[key] = false;
 		}
 	}
-
+	// Alternates between lights
 	if (keys[GLFW_KEY_SPACE])
 	{
 		active = !active;
@@ -925,7 +891,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 			LightP3 = glm::vec3(0.7f, 0.7f, 0.7f);
 		}
 	}
-
+	//Turn all the lights off
 	if (keys[GLFW_KEY_F]) {
 		LightP1 = glm::vec3(0.0f, 0.0f, 0.0f);
 		LightP2 = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -933,6 +899,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	}
 }
 
+// Is called whenever the mouse is moved
 void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 {
 
@@ -955,106 +922,78 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 // Moves/alters the camera positions based on user input
 void DoMovement()
 {
-	if (keys[GLFW_KEY_1])
-	{
+	// Opens garage
+	if (keys[GLFW_KEY_1]){
 		if (rotGarage > -90.0f) {
 			rotGarage -= 1.0f;
 		}
 	}
-
-	if (keys[GLFW_KEY_2])
-	{
-
+	// Closes garage
+	if (keys[GLFW_KEY_2]){
 		if (rotGarage < 0.0f) {
 			rotGarage += 1.0f;
 		}
-
 	}
-
-	if (keys[GLFW_KEY_3])
-	{
+	// Opens garage door
+	if (keys[GLFW_KEY_3]){
 		if (rotGarageDoor < 90.0f) {
 			rotGarageDoor += 1.0f;
 		}
 	}
-
-	if (keys[GLFW_KEY_4])
-	{
+	// Closes garage door
+	if (keys[GLFW_KEY_4]){
 		if (rotGarageDoor > 0.0f) {
 			rotGarageDoor -= 1.0f;
 		}
 	}
-
-	if (keys[GLFW_KEY_5])
-	{
+	// Opens house door
+	if (keys[GLFW_KEY_5]){
 		if (rotHouseDoor > -100.0f) {
 			rotHouseDoor -= 1.0f;
 		}
 	}
-
-	if (keys[GLFW_KEY_6])
-	{
+	// Closes house door
+	if (keys[GLFW_KEY_6]){
 		if (rotHouseDoor < -5.0f) {
 			rotHouseDoor += 1.0f;
 		}
 	}
-
-	if (keys[GLFW_KEY_7])
-	{
+	// Starts car animation
+	if (keys[GLFW_KEY_7]){
 		circuitoCar = true;
 	}
-
-	if (keys[GLFW_KEY_8])
-	{
+	// Stops car animation
+	if (keys[GLFW_KEY_8]){
 		circuitoCar = false;
 	}
-
-	if (keys[GLFW_KEY_9])
-	{
+	// Starts garage animation
+	if (keys[GLFW_KEY_9]){
 		garageAnim = true;
 	}
-
-	if (keys[GLFW_KEY_0])
-	{
+	// Pauses garage animation
+	if (keys[GLFW_KEY_0]){
 		garageAnim = false;
 	}
-
+	// Starts chair animation
 	if (keys[GLFW_KEY_O]) {
 		sillaAnim = true;
 	}
+	// Pauses chair animations
 	if (keys[GLFW_KEY_P]) {
 		sillaAnim = false;
 	}
-
 	// Camera controls
-	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
-	{
+	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]){
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 
 	}
-
-	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
-	{
+	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]){
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
-
-
 	}
-
-	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
-	{
+	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]){
 		camera.ProcessKeyboard(LEFT, deltaTime);
-
-
 	}
-
-	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
-	{
+	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]){
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
-
-
-
-
-
-
 }
