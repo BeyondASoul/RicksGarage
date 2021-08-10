@@ -26,6 +26,10 @@
 #include "Texture.h"
 #include "modelAnim.h"
 
+// Musica de fondo
+#include <irrKlang.h>
+using namespace irrklang;
+
 // Function prototypes
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
@@ -36,7 +40,7 @@ void animacionGarage();
 void animacionSilla();
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 1280, HEIGHT = 720;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 // Camera
 Camera camera(glm::vec3(3.0f, 3.0f, 6.0f));
@@ -206,6 +210,16 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	// Musica
+	ISoundEngine* SoundEngine = createIrrKlangDevice();
+
+	if (!SoundEngine)
+		return 0; //error al iniciar el audio
+	// Reproduce la audio
+	SoundEngine->play2D("Audio/hombres-lunares.mp3", true);
+
+
 	//Shaders
 	Shader lightingShader("Shaders/lighting.vs", "Shaders/lighting.frag");
 	Shader lampShader("Shaders/lamp.vs", "Shaders/lamp.frag");

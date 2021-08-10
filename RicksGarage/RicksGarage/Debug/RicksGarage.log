@@ -1,0 +1,12 @@
+﻿  main.cpp
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\modelAnim.h(104,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\modelAnim.h(519,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(445,24): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(728,18): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(908,11): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(909,11): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(913,18): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(914,18): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(916,10): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(917,10): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+  RicksGarage.vcxproj -> C:\Users\BeyondASoul\source\repos\RicksGarage\Debug\RicksGarage.exe

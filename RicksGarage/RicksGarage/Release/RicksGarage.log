@@ -1,0 +1,23 @@
+﻿  main.cpp
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\modelAnim.h(104,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\modelAnim.h(519,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(459,24): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(742,18): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(922,11): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(923,11): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(927,18): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(928,18): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(930,10): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\BeyondASoul\source\repos\RicksGarage\RicksGarage\main.cpp(931,10): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+soil2-debug.lib(SOIL2.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
+LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  1 of 1081 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+soil2-debug.lib(etc1_utils.obj) : warning LNK4099: PDB 'soil2-debug.pdb' was not found with 'soil2-debug.lib(etc1_utils.obj)' or at 'C:\Users\BeyondASoul\source\repos\RicksGarage\Release\soil2-debug.pdb'; linking object as if no debug info
+soil2-debug.lib(image_DXT.obj) : warning LNK4099: PDB 'soil2-debug.pdb' was not found with 'soil2-debug.lib(image_DXT.obj)' or at 'C:\Users\BeyondASoul\source\repos\RicksGarage\Release\soil2-debug.pdb'; linking object as if no debug info
+soil2-debug.lib(image_helper.obj) : warning LNK4099: PDB 'soil2-debug.pdb' was not found with 'soil2-debug.lib(image_helper.obj)' or at 'C:\Users\BeyondASoul\source\repos\RicksGarage\Release\soil2-debug.pdb'; linking object as if no debug info
+soil2-debug.lib(SOIL2.obj) : warning LNK4099: PDB 'soil2-debug.pdb' was not found with 'soil2-debug.lib(SOIL2.obj)' or at 'C:\Users\BeyondASoul\source\repos\RicksGarage\Release\soil2-debug.pdb'; linking object as if no debug info
+  RicksGarage.vcxproj -> C:\Users\BeyondASoul\source\repos\RicksGarage\Release\RicksGarage.exe
